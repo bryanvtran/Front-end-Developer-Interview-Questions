@@ -178,13 +178,52 @@ Closures are inner functions inside of an outer function. They have their own lo
 
 Closures are a neat way to deal with scope issues. Because Javascript is a function-level scope rather than as with other languages, block-level scope and Javascript is an asynchronous/event driven language. Example that Closure is frequently used is jQuery (ex. click()).
 
-A closure is a way of keeping access to variables in a function after that function has returned. Since closures keep access to the variables they can be used to save state. And things that save state look a whole lot like objects.
+A closure is a way of keeping access to variables in a function after that function has returned. Since closures keep access to the variables they can be used to save state. And things that save state look a whole lot like objects. (provides privacy and state).
 
 * Can you describe the main difference between a `forEach` loop and a `.map()` loop and why you would pick one versus the other?
+
+**map()** is more aligned with functional programming. It returns a new array, allowing you to chain functions after calling it. **forEach()** operates on our original array. You may be wondering why that matters. The idea is that a functional application is easier to debug because data structures are treated as immutable entities. 
+
 * What's a typical use case for anonymous functions?
+
+When I only need to do things one-time only or don't even invoke it in further.
+
+Since Anonymous Functions are function expressions rather than the regular function declaration which are statements. Function expressions are more flexible. We can assign functions to variables, object properties, pass them as arguments to other functions, and even write a simple one line code enclosed in an anonymous functions.
+
 * How do you organize your code? (module pattern, classical inheritance?)
+
+In JavaScript, the Module pattern is used to further emulate the concept of classes in such a way that we’re able to include both public/private methods and variables inside a single object, thus shielding particular parts from the global scope.
+
+Sometimes you don’t just want to use globals, but you want to declare them. We can easily do this by exporting them, using the anonymous function’s return value. Doing so will complete the basic module pattern, so here’s a complete example:
+
+```javascript
+var MODULE = (function () {
+	var my = {},
+		privateVariable = 1;
+
+	function privateMethod() {
+		// ...
+	}
+
+	my.moduleProperty = 1;
+	my.moduleMethod = function () {
+		// ...
+	};
+
+	return my;
+}());
+```
+
+Modular code is self-contained, allowing you to hide the variable accessibility from the outside world and stand by itself.
+
 * What's the difference between host objects and native objects?
+
+**Host Objects** are objects supplied by a certain environment. **Native Objects or Built-in Objects** are standard built-in objects provided by Javascript. Native objects is sometimes referred to as ‘Global Objects’ since they are objects Javascript has provided natively available for use.
+
 * Difference between: `function Person(){}`, `var person = Person()`, and `var person = new Person()`?
+
+
+
 * What's the difference between `.call` and `.apply`?
 
 To pass the value of this from one context to another, use call, or apply.
