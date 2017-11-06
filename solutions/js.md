@@ -222,7 +222,13 @@ Modular code is self-contained, allowing you to hide the variable accessibility 
 
 * Difference between: `function Person(){}`, `var person = Person()`, and `var person = new Person()`?
 
+```javascript
+function Person(){} // defines a function, probably a constructor/class
 
+var person = new Person() // new keyword creates a new object, with its prototype set to Person's prototype, then calls constructor (instantiate an object based on a class)
+
+var person = Person() // Declares a variable (person), invokes a function (Person) and sets the value of person to the return of the function.
+```
 
 * What's the difference between `.call` and `.apply`?
 
@@ -260,42 +266,242 @@ add.call(o, 5, 7); // 16
 add.apply(o, [10, 20]); // 34
 ```
 
+For .call you pass the parameters comma separated (like normal). For .apply you pass the parameters in an array.
+
 * Explain `Function.prototype.bind`.
+
+**bind** allows you to set which object is treated as this within the function call.
+
+```javascript
+function Person(name){
+  this.name = name;
+  this.distractedGreeting = function() {
+    setTimeout(function(){
+      console.log("Hello, my name is " + this.name);
+    }.bind(this), 500); // <-- this line!
+  }
+}
+
+var alice = new Person('Alice');
+alice.distractedGreeting();
+// after 500ms logs "Hello, my name is Alice"
+```
+
+as opposed to this:
+
+```javascript
+function Person(name){
+  this.name = name;
+  this.distractedGreeting = function() {
+    var self = this; // caching
+    setTimeout(function(){
+      console.log("Hello, my name is " + self.name);
+      console.log(this.location.origin);
+    }, 500); // no binding
+  }
+}
+```
+
 * When would you use `document.write()`?
+
+**document.write()** writes to the document, but it will overwrite the entire page with the new content.
+
+It seems that the only “approved” time to use document.write() is for third party code to be included (such as ads or Google Analytics). Since document.write() is always available (mostly) it is a good choice for third party vendors to use it to add their scripts.
+
 * What's the difference between feature detection, feature inference, and using the UA string?
+
+**Feature detection** is when you check if a feature exists. **Feature inference** is when you make an assumption that because one feature is present (or not) another one will also be present (or not). **UA string** provides information about the browser/os that the user is using (still making an assumption). Use feature detection if you're working with a feature that isn’t available across all browsers. When the browsers upgrade your code will be able to take advantage of the upgrade and your code will still work.
+
 * Explain Ajax in as much detail as possible.
+
+Asynchronous JavaScript and XML. Using JavaScript to send requests to the server and listen to the responses asynchronously. Can update the page after it has finished loading, so that the front end could change without a full page refresh, thus giving a much faster response time. More common for AJAX to get data and update the DOM as needed rather than doing a swap.
+
 * What are the advantages and disadvantages of using Ajax?
+
+Best use is the ability to send small payloads. 
+
+Using AJAX to submit forms isn't always the best bet. Asides from not really giving you a clear advantage over posting the form normally, you break conventions such as browser history. When using AJAX, you need to handle the task of telling the user if something has gone wrong. 
+
+Other issues to watch out for are any JavaScript errors that may prevent your events from firing - or if JavaScript is disabled, in either case ensuring that the form can submit normally before you add the AJAX code is the safest option.
+
 * Explain how JSONP works (and how it's not really Ajax).
+
+JSONP(as in “JSON with Padding”) is a method commonly used to bypass the cross-domain policies in web browsers (you are not allowed to make AJAX requests to a webpage perceived to be on a different server by the browser). JSON and JSONP behave differently on both the client and the server. JSONP requests are not dispatched using the XMLHTTPRequest,instead a `<script>` tag is created, whose source is set to the target URL. This script tag is then added to the DOM (normally the `<head>`).
+
+One major issue with JSONP: you lose a lot of control of the request. For example, there is no "nice" way to get proper failure codes back. These days (2015), CORS is the recommended approach vs. JSONRequest. JSONP is still useful for older browser support, but given the security implications, unless you have no choice CORS is the better choice.
+
 * Have you ever used JavaScript templating?
   * If so, what libraries have you used?
+
+Yes, have used Handlebars briefly for a project in the Daily Bruin. Also used it when using Angular over the summer.
+
 * Explain "hoisting".
+
+Variable declarations (and declarations in general) are processed before any code is executed, declaring a variable anywhere in the code is equivalent to declaring it at the top. This also means that a variable can appear to be used before it’s declared. This behavior is called “hoisting”, as it appears that the variable declaration is moved to the top of the function or global code.
+
 * Describe event bubbling.
+
+vent bubbling and capturing are two ways of event propagation in the HTML DOM API, when an event occurs in an element inside another element, and both elements have registered a handle for that event. The event propagation mode determines in which order the elements receive the event. With bubbling, the event is first captured and handled by the innermost element and then propagated to outer elements. With capturing, the event is first captured by the outermost element and propagated to the inner elements.
+
 * What's the difference between an "attribute" and a "property"?
+
+Attributes are defined by HTML. Properties are defined by DOM. Some HTML attributes have 1:1 mapping onto properties. id is one example of such. Some do not (e.g. the value attribute specifies the initial value of an input, but the valueproperty specifies the current value).
+
+Properties are generally simpler to deal with than attributes. An attribute value may only be a string whereas a property can be of any type.
+
+Where both a property and an attribute with the same name exists, usually updating one will update the other, but this is not the case for certain attributes of inputs, such as value and checked: for these attributes, the property always represents the current state while the attribute (except in old versions of IE) corresponds to the default value/checkedness of the input (reflected in the defaultValue / defaultChecked property).
+
 * Why is extending built-in JavaScript objects not a good idea?
+
+Don’t do it because you might end up breaking other’s codes. If, in future, a browser decides to implement its own version of your method, your method might get overridden (silently) and the browser’s implementation (which is probably different from yours) would take over
+
 * Difference between document load event and document DOMContentLoaded event?
+
+**DOMContentLoaded** - the whole document (HTML) has been loaded. **load** — the whole document and its resources (e.g. images, iframes, scripts) have been loaded.
+
 * What is the difference between `==` and `===`?
+
+The identity (===) operator behaves identically to the equality (==) operator except no type conversion is done, and the types must be the same to be considered equal.
+
 * Explain the same-origin policy with regards to JavaScript.
+
+The same origin policy states that a web browser permits script contained in one page (or frame) to access data in another page (or frame) only if both the pages have the same origin. It is a critical security mechanism for isolating potentially malicious documents. Two pages have the same origin if the protocol, port (if one is specified), and host are the same for both pages. 
+
 * Make this work:
 ```javascript
 duplicate([1,2,3,4,5]); // [1,2,3,4,5,1,2,3,4,5]
+
+function duplicate(a) {
+  return a.concat(a);
+}
 ```
 * Why is it called a Ternary expression, what does the word "Ternary" indicate?
+
+“Ternary” means operands with three(n-ary) param. This is a one-line shorthand for an if-then statement. It is called a ternary operator or a conditional operator. Read this for example.
+
 * What is `"use strict";`? what are the advantages and disadvantages to using it?
+
+Strict mode is a way to opt in to a restricted variant of JavaScript. Strict mode isn’t just a subset: it intentionally has different semantics from normal code. Browsers not supporting strict mode will run strict mode code with different behavior from browsers that do, so don’t rely on strict mode.
+
+Strict Mode is a new feature in ECMAScript 5 that allows you to place a program, or a function, in a “strict” operating context. This strict context prevents certain actions from being taken and throws more exceptions (generally providing the user with more information and a tapered-down coding experience).
+
+Pros: It catches some common coding bloopers, throwing exceptions. It prevents, or throws errors, when relatively “unsafe” actions are taken (such as gaining access to the global object). It disables features that are confusing or poorly thought out.
+
+Cons: The best explanation I found was when code mixed strict and “normal” modes. If a developer used a library that was in strict mode, but the developer was used to working in normal mode, they might call some actions on the library that wouldn’t work as expected. 
+
 * Create a for loop that iterates up to `100` while outputting **"fizz"** at multiples of `3`, **"buzz"** at multiples of `5` and **"fizzbuzz"** at multiples of `3` and `5`
+
+```javascript
+for (var i=1; i <= 100; i++)
+{
+    if (i % 15 == 0)
+        console.log("fizzbuzz");
+    else if (i % 3 == 0)
+        console.log("fizz");
+    else if (i % 5 == 0)
+        console.log("buzz");
+    else
+        console.log(i);
+}
+```
+
 * Why is it, in general, a good idea to leave the global scope of a website as-is and never touch it?
+
+The primary reason why global variables are discouraged in javascript is because, in javascript all code share a single global namespace, also javascript has implied global variables i.e. variables which are not explicitly declared in local scope are automatically added to global namespace. Relying too much on global variables can result in collisions between various scripts on the same page.
+
 * Why would you use something like the `load` event? Does this event have disadvantages? Do you know any alternatives, and why would you use those?
+
+The load event fires at the end of the document loading process. At this point, all of the objects in the document are in the DOM, and all the images, scripts, links and sub-frames have finished loading. To execute anything post document load, we fire these events. ‘DOMContentLoaded’ or jQuery’s loaded are another options.
+
 * Explain what a single page app is and how to make one SEO-friendly.
+
+A single-page application (SPA) is a web application or web site that fits on a single web page with the goal of providing a more fluid user experience similar to a desktop application. In a SPA, either all necessary code — HTML, JavaScript, and CSS — is retrieved with a single page load, or the appropriate resources are dynamically loaded and added to the page as necessary, usually in response to user actions.
+
+Since Googlebots will execute your JavaScript, your page contents and links will be available for them. Can also add a Sitemap file named sitemap.xml at your web server root directory to tell crawlers what links do you have in your website. Also can pre-render the page and make it available for crawlers.
+
 * What is the extent of your experience with Promises and/or their polyfills?
+
+Familiar with it because I worked with it over the summer at my internship with Angular. 
+
+Basic usage:
+```javascript
+new Promise((resolve, rejected) => {
+    if(resolve){
+        resolve("successed");
+    }
+    else{
+        rejected("failed");
+    }
+})
+.then((result) => {
+    console.log(result);
+})
+.then((result) => {
+    console.log(result);
+});
+```
+
 * What are the pros and cons of using Promises instead of callbacks?
+
+It is fair to say promises are just syntactic sugar. Everything you can do with promises you can do with callbacks. The deep reason why promises are often better is that they’re more composeable, which roughly means that combining multiple promises “just works” and is more readable, while combining multiple callbacks often doesn’t and creates callback hell.
+
 * What are some of the advantages/disadvantages of writing JavaScript code in a language that compiles to JavaScript?
+
+Pros/Cons: Syntactic sugar, readable code, and use of good patterns vs debugging and compilation/debugging issues.
+
 * What tools and techniques do you use debugging JavaScript code?
+
+Web/Browser console using console.log. Chrome Developer Tools, break points.
+
 * What language constructions do you use for iterating over object properties and array items?
+
+for loop, for..in, for each..in, map, reduce 
+
 * Explain the difference between mutable and immutable objects.
+
+Mutable objects are those whose state is allowed to change over time. An immutable value is the exact opposite — after it has been created, it can never change. Strings and Numbers are inherently immutable in javascript.
+
   * What is an example of an immutable object in JavaScript?
+
+Strings and numbers are immutable.
+
   * What are the pros and cons of immutability?
+
+Pros: Programs with immutable objects are less complicated to think about, since you don't need to worry about how an object may evolve over time. Immutable objects are good for sharing information between threads in a multi-threaded environment since they don't need to be synchronized.
+
+Cons: Allocating lots and lots of small objects rather than modifying ones you already have can have a performance impact. Usually the complexity of either the allocator or the garbage collector depends on the number of objects on the heap. Naive implementations of immutable data structures can result in extremely poor performance. 
+
   * How can you achieve immutability in your own code?
+
+Instead of passing the object and mutating it, can create a completely new object. Can use something like Immutable.js, which provides many Persistent Immutable data structures including: List, Stack, Map, OrderedMap, Set, OrderedSet and Record.
+
 * Explain the difference between synchronous and asynchronous functions.
+
+Synchronous: Step wise execution. Next line executed after first. Asynchronous: Execution moves to next step before first is finished. 
+
 * What is event loop?
   * What is the difference between call stack and task queue?
+
+JavaScript has a concurrency model based on an “event loop”. 
+
+```javascript
+while (queue.waitForMessage()) {
+  queue.processNextMessage();
+}
+```
+
+Call stack: In a loop, the queue is polled for the next message (each poll referred to as a “tick”) and when a message is encountered, the callback for that message is executed.
+
+Task queue: A JavaScript runtime contains a message queue, which is a list of messages to be processed. A function is associated with each message. When the stack has enough capacity, a message is taken out of the queue and processed. The processing consists of calling the associated function (and thus creating an initial stack frame). The message processing ends when the stack becomes empty again.
+  
 * Explain the differences on the usage of `foo` between `function foo() {}` and `var foo = function() {}`
+
+First one is declaration defined at parse time while the other is expression defined at run time.
+
 * What are the differences between variables created using `let`, `var` or `const`?
+
+`const` is a signal that the identifier won’t be reassigned.
+
+`let`, is a signal that the variable may be reassigned, such as a counter in a loop, or a value swap in an algorithm. It also signals that the variable will be used only in the block it’s defined in, which is not always the entire containing function.
+
+`var` is now the weakest signal available when you define a variable in JavaScript. The variable may or may not be reassigned, and the variable may or may not be used for an entire function, or just for the purpose of a block or loop.
