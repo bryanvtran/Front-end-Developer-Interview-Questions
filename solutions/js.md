@@ -174,6 +174,11 @@ if( variable === null ) {
 ```
 * What is a closure, and how/why would you use one?
 
+Closures are inner functions inside of an outer function. They have their own local scope and has access to outer function’s scope, parameters (but NOT arguments object), and they also have access to global variables.
+
+Closures are a neat way to deal with scope issues. Because Javascript is a function-level scope rather than as with other languages, block-level scope and Javascript is an asynchronous/event driven language. Example that Closure is frequently used is jQuery (ex. click()).
+
+A closure is a way of keeping access to variables in a function after that function has returned. Since closures keep access to the variables they can be used to save state. And things that save state look a whole lot like objects.
 
 * Can you describe the main difference between a `forEach` loop and a `.map()` loop and why you would pick one versus the other?
 * What's a typical use case for anonymous functions?
